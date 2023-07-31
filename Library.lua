@@ -1178,7 +1178,7 @@ do
             if KeyPicker.Mode == 'Always' then
                 return true;
             elseif KeyPicker.Mode == 'Hold' then
-                if KeyPicker.Value == 'None' then
+                if KeyPicker.Value == 'None' or KeyPicker.Value == 'N/A' then
                     return false;
                 end
 
