@@ -173,7 +173,7 @@ function Library:MakeDraggable(Instance, Cutoff)
             
             targetPos = UDim2.fromOffset(rootPos.X, rootPos.Y)
             aCon = RunService.RenderStepped:Connect(function(dt) 
-                mainFrame.Position = mainFrame.Position:lerp(targetPos, 1 - 0^dt)-- 1 - 1e-12^dt)
+                Instance.Position = Instance.Position:lerp(targetPos, 1 - 0^dt)-- 1 - 1e-12^dt)
             end)
             
             dCon = InputService.InputChanged:Connect(function(io) 
