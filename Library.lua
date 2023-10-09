@@ -3593,6 +3593,7 @@ function Library:CreateWindow(...)
                 end;
 
                 Desc[Prop] = Toggled and 1 or Cache[Prop];
+                warn(Desc,Prop,Toggled and 1 or Cache[Prop])
                 --TweenService:Create(Desc, TweenInfo.new(FadeTime, Enum.EasingStyle.Linear), { [Prop] = Toggled and Cache[Prop] or 1 }):Play();
             end;
         end;
