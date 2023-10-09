@@ -164,28 +164,45 @@ end;
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
 
-    Instance.InputBegan:Connect(function(Input)
-        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-            local ObjPos = Vector2.new(
-                Mouse.X - Instance.AbsolutePosition.X,
-                Mouse.Y - Instance.AbsolutePosition.Y
-            );
+    Instance.InputBegan:Connect(function(io) 
+        if (io.UserInputType.Value == 0) then
+            local rootPos = Instance.AbsolutePosition
+            local startPos = io.Position
+            
+            startPos = Vector2.new(startPos.X, startPos.Y)
+            
+            targetPos = UDim2.fromOffset(rootPos.X, rootPos.Y)
+            aCon = RunService.RenderStepped:Connect(function(dt) 
+                mainFrame.Position = mainFrame.Position:lerp(targetPos, 1 - 0^dt)-- 1 - 1e-12^dt)
+            end)
+            
+            dCon = InputService.InputChanged:Connect(function(io) 
+                if (io.UserInputType.Value == 4) then
+                    local curPos = io.Position
+                    curPos = Vector2.new(curPos.X, curPos.Y) 
+                    
+                    local dest = rootPos + (curPos - startPos)
+                    targetPos = UDim2.fromOffset(dest.X, dest.Y)
+                end
+            end)
+            
+        end
+    end)
 
-            if ObjPos.Y > (Cutoff or 40) then
-                return;
-            end;
+    function tween(object, shit, duration, style) 
+        local tweenInfo = TweenInfo.new(duration, styles[style], direction)
+        local tween = tweenService:Create(object, tweenInfo, shit)
+        tween:Play()
+        return tween 
+    end
 
-            while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                Instance.Position = UDim2.new(
-                    0,
-                    Mouse.X - ObjPos.X + (Instance.Size.X.Offset * Instance.AnchorPoint.X),
-                    0,
-                    Mouse.Y - ObjPos.Y + (Instance.Size.Y.Offset * Instance.AnchorPoint.Y)
-                );
-
-                task.wait()
-            end;
-        end;
+    Instance.InputEnded:Connect(function(io)
+        if (io.UserInputType.Value == 0) then
+            dCon:Disconnect()
+            aCon:Disconnect()
+            
+            tween(mainFrame, {Position = targetPos}, 0.2, 1)
+        end
     end)
 end;
 
