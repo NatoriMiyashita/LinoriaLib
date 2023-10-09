@@ -165,7 +165,6 @@ function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
     local dCon
     local aCon
-    local mainFrame = instances.main
     local targetPos
 
     Instance.InputBegan:Connect(function(io) 
@@ -199,9 +198,9 @@ function Library:MakeDraggable(Instance, Cutoff)
         
         local direction = dirEnum.Out
         local styles = {styleEnum.Exponential, styleEnum.Linear}
-        
+
         local tweenInfo = TweenInfo.new(duration, styles[style], direction)
-        local tween = tweenService:Create(object, tweenInfo, shit)
+        local tween = TweenService:Create(object, tweenInfo, shit)
         tween:Play()
         return tween 
     end
