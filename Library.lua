@@ -12,7 +12,7 @@ local Mouse = LocalPlayer:GetMouse();
 local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
 local ScreenGui = Instance.new('ScreenGui');
---ProtectGui(ScreenGui);
+ProtectGui(ScreenGui);
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
 ScreenGui.Parent = CoreGui;
@@ -163,55 +163,29 @@ end;
 
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
-    local dCon
-    local aCon
-    local targetPos
 
-    Instance.InputBegan:Connect(function(io) 
-        if (io.UserInputType.Value == 0) then
-            local rootPos = Instance.AbsolutePosition
-            local startPos = io.Position
-            
-            startPos = Vector2.new(startPos.X, startPos.Y)
-            
-            targetPos = UDim2.fromOffset(rootPos.X, rootPos.Y)
-            aCon = RunService.RenderStepped:Connect(function(dt) 
-                Instance.Position = Instance.Position:lerp(targetPos, 1 - 0^dt)-- 1 - 1e-12^dt)
-            end)
-            
-            dCon = InputService.InputChanged:Connect(function(io) 
-                if (io.UserInputType.Value == 4) then
-                    local curPos = io.Position
-                    curPos = Vector2.new(curPos.X, curPos.Y) 
-                    
-                    local dest = rootPos + (curPos - startPos)
-                    targetPos = UDim2.fromOffset(dest.X, dest.Y)
-                end
-            end)
-            
-        end
-    end)
+    Instance.InputBegan:Connect(function(Input)
+        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local ObjPos = Vector2.new(
+                Mouse.X - Instance.AbsolutePosition.X,
+                Mouse.Y - Instance.AbsolutePosition.Y
+            );
 
-    local function tween(object, shit, duration, style) 
-        local styleEnum = Enum.EasingStyle
-        local dirEnum = Enum.EasingDirection
-        
-        local direction = dirEnum.Out
-        local styles = {styleEnum.Exponential, styleEnum.Linear}
+            if ObjPos.Y > (Cutoff or 40) then
+                return;
+            end;
 
-        local tweenInfo = TweenInfo.new(duration, styles[style], direction)
-        local tween = TweenService:Create(object, tweenInfo, shit)
-        tween:Play()
-        return tween 
-    end
+            while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
+                Instance.Position = UDim2.new(
+                    0,
+                    Mouse.X - ObjPos.X + (Instance.Size.X.Offset * Instance.AnchorPoint.X),
+                    0,
+                    Mouse.Y - ObjPos.Y + (Instance.Size.Y.Offset * Instance.AnchorPoint.Y)
+                );
 
-    Instance.InputEnded:Connect(function(io)
-        if (io.UserInputType.Value == 0) then
-            dCon:Disconnect()
-            aCon:Disconnect()
-            
-            tween(mainFrame, {Position = targetPos}, 0.2, 1)
-        end
+                RenderStepped:Wait();
+            end;
+        end;
     end)
 end;
 
@@ -2972,7 +2946,7 @@ function Library:CreateWindow(...)
 
     if type(Config.Title) ~= 'string' then Config.Title = 'No title' end
     if type(Config.TabPadding) ~= 'number' then Config.TabPadding = 0 end
-    if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
+    if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0 end
 
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
     if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(550, 600) end
@@ -3618,9 +3592,8 @@ function Library:CreateWindow(...)
                     continue;
                 end;
 
-                Desc[Prop] = Toggled and 1 or Cache[Prop];
-                warn(Desc,Prop,Toggled and 1 or Cache[Prop])
-                --TweenService:Create(Desc, TweenInfo.new(FadeTime, Enum.EasingStyle.Linear), { [Prop] = Toggled and Cache[Prop] or 1 }):Play();
+                --Desc[Prop] = Toggled and 1 or Cache[Prop];
+                TweenService:Create(Desc, TweenInfo.new(FadeTime, Enum.EasingStyle.Linear), { [Prop] = Toggled and Cache[Prop] or 1 }):Play();
             end;
         end;
 
