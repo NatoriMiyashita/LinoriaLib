@@ -163,6 +163,10 @@ end;
 
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
+    local dCon
+    local aCon
+    local mainFrame = instances.main
+    local targetPos
 
     Instance.InputBegan:Connect(function(io) 
         if (io.UserInputType.Value == 0) then
@@ -189,7 +193,13 @@ function Library:MakeDraggable(Instance, Cutoff)
         end
     end)
 
-    function tween(object, shit, duration, style) 
+    local function tween(object, shit, duration, style) 
+        local styleEnum = Enum.EasingStyle
+        local dirEnum = Enum.EasingDirection
+        
+        local direction = dirEnum.Out
+        local styles = {styleEnum.Exponential, styleEnum.Linear}
+        
         local tweenInfo = TweenInfo.new(duration, styles[style], direction)
         local tween = tweenService:Create(object, tweenInfo, shit)
         tween:Play()
